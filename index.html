@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html ng-app="MyApp">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="css/style.css"/> -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+    <script>
+        angular.module("MyApp", [])
+            .controller("myCtrl", function ($scope, $http) {
+                    $scope.wait = true;
+            });
+    </script>
+</head>
+<div ng-controller="myCtrl">
+
+    <form class="col-md-6 col-md-offset-3" ng-submit="sendMail();">
+        <br>
+        <h2 class="text-center">Welcome</h2>
+        <a class="btn btn-default btn-primary col-md-6 col-md-offset-3" href="/auth/google">G+ sign in with google</a>
+    </form>
+</div>
+</body>
+
+</html>

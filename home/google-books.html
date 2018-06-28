@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html ng-app="MyApp">
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+
+    <script>
+        angular.module("MyApp", [])
+            .controller("myCtrl", function ($scope, $http) {
+                $scope.name = 'rajesh'
+                $scope.getBooks = function () {
+                    $scope.wait = true;
+                    $scope.method = 'GET';
+                    $scope.url = 'https://www.googleapis.com/books/v1/volumes?q=' + $scope.name;
+
+                    $http({ method: $scope.method, url: $scope.url }).
+                        then(function (response) {
+                            $scope.status = response.status;
+                            $scope.get_books = response.data.items;
+                            $scope.totalItems = response.data.totalItems;
+
+                            $scope.wait = false;
+                            console.log($scope.totalItems)
+                        }, function (response) {
+                            $scope.status = response.status;
+                            $scope.wait = false;
+                        });
+                };
+
+                $scope.add_to_favorite = function (booksData) {
+                    var params = {
+                        'bookId': booksData.id,
+                        'title': booksData.volumeInfo.title,
+                        'author': booksData.volumeInfo.authors,
+                        'published_date': booksData.volumeInfo.publishedDate,
+                        'publisher': booksData.volumeInfo.publisher,
+                        'image_url': booksData.volumeInfo.imageLinks.smallThumbnail,
+                    }
+                    console.log(params)
+                    $http.post('/books/add_to_favorite', params).success(function (data) {
+                        if (data.result == 'Success') {
+                            console.log(data)
+                            $scope.favorites = data.data;
+                            $scope.wait = false;
+                        } else {
+                            $scope.wait = false;
+                        }
+                    }).error(function (data, status) {
+                        $scope.wait = false;
+                        console.log('Error')
+                    });
+                };
+
+                   $scope.remove_from_favorite = function (id) {
+                    var params = {
+                        'bookId': id,
+                    }
+                    $http.post('/books/remove_from_favorite', params).success(function (data) {
+                        if (data.result == 'Success') {
+                            console.log(data)
+                            $scope.favorites = data.data;
+                            $scope.wait = false;
+                        } else {
+                            $scope.wait = false;
+                        }
+                    }).error(function (data, status) {
+                        $scope.wait = false;
+                        console.log('Error')
+                    });
+                };
+
+                $scope.get_favorites = function () {
+                    $http.get('/books/get_favorites').success(function (data) {
+                        if (data.result == 'Success') {
+                            $scope.favorites = data.data;
+                        } else {
+                            $scope.favorites = null;
+                        }
+                    }).error(function (data, status) {
+                        console.log('Error')
+                    });
+                };
+
+                $scope.ifExists = function(id){
+                    return $scope.favorites.some(item => item.bookId == id);
+                }
+
+            });
+    </script>
+</head>
+<div ng-controller="myCtrl" ng-init="getBooks(); get_favorites()">
+
+    <form class="col-lg-6 col-lg-6 col-lg-offset-3 col-lg-offset-3" ng-submit="getBooks();">
+    <a class="pull-right" href="/logout">Logout</a>
+        <br>
+        <br>
+        <div class="form-group">
+            <h3>Book Name</h3>
+            <input type="text" class="form-control" ng-model="name" ng-change="mailSent = false;" placeholder="Book name" required>
+        </div>
+        <button type="submit" class="btn btn-default btn-primary">Search</button>
+        <div class="pull-right">
+            Click
+            <a type="submit" href="/home/favorite-books">here</a> to see all favorite books
+        </div>
+
+        <h4 ng-show="wait">Please wait.....</h4>
+        <br>
+        <br>
+        <div ng-show="totalItems == 0" class="text-center">
+            <h4 style="color: red">No books found!</h4>
+        </div>
+        <table ng-show="!wait && totalItems != 0" class="table table-striped table-bordered">
+            <thead style="border:2px solid #1E90FF;">
+                <tr class="info">
+                    <th scope="col">Sl. No.</th>
+                    <th scope="col">Tite</th>
+                    <th scope="col">Authors</th>
+                    <th scope="col">Published Date</th>
+                    <th scope="col">Publisher</th>
+                    <th scope="col">Image</th>
+                    <th scope="col">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr scope="row" ng-repeat="data in get_books">
+                    <td ng-bind="$index+1+indexIncrement"></td>
+                    <td ng-bind="data.volumeInfo.title"></td>
+                    <td ng-bind="data.volumeInfo.authors"></td>
+                    <td ng-bind="data.volumeInfo.publishedDate"></td>
+                    <td ng-bind="data.volumeInfo.publisher"></td>
+                    <td>
+                        <img ng-src="{{data.volumeInfo.imageLinks.smallThumbnail}}">
+                    </td>
+                    <td>
+                        <button ng-if="!ifExists(data.id)" type="button" class="btn btn-success btn" ng-click="add_to_favorite(data)" title="Add to favorite">
+                            <i class="glyphicon glyphicon-star"></i> Add</button>
+                            <button ng-if="ifExists(data.id)" type="button" class="btn btn-warning btn" ng-click="remove_from_favorite(data.id)" title="Remove from favorite">
+                                    <i class="glyphicon glyphicon-trash"></i> Remove</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </form>
+</div>
+</body>
+
+</html>

@@ -14,7 +14,7 @@
                     if (data.result == 'Success') {
                         console.log('result')
                         $scope.user = data.user;
-                        $scope.username = data.user.name.displayName
+                        $scope.username = data.user.displayName;
                         console.log(data)
                     } else {
                         console.log('user not found!')

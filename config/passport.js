@@ -12,14 +12,14 @@ module.exports = function (passport) {
 
     // used to serialize the user for the session
     passport.serializeUser(function (user, done) {
+        console.log('serialize');
         done(null, user);
     });
 
     // used to deserialize the user
     passport.deserializeUser(function (id, done) {
-        User.findById(id, function (err, user) {
-            done(err, user);
-        });
+         console.log('deserialize');
+         done(null, id);
     });
 
 
@@ -38,11 +38,8 @@ module.exports = function (passport) {
         // credentials (in this case, a token, tokenSecret, and Google profile), and
         // invoke a callback with a user object.
         function (token, tokenSecret, profile, done) {
-            console.log('profile')
             // asynchronous
             process.nextTick(function () {
-               // console.log(profile)
-                // if successful, return the new user
                 return done(null, profile);
             });
         }

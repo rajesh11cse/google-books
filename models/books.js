@@ -13,33 +13,27 @@ var mongoose = require('mongoose'),
 var BooksSchema = new Schema({
   
   bookId: {
-    type: String,
-    required: true
+    type: String
   },
 
   title: {
-    type: String,
-    required: true
+    type: String
   },
   
   author: {
-    type: String,
-    required: true
+    type: String
   },
   
   published_date: {
-    type: String,
-    required: true
+    type: String
   },
   
   publisher: {
-    type: String,
-    required: true
+    type: String
   },
   
   image_url: {
-    type: String,
-    required: true
+    type: String
   },
   
 

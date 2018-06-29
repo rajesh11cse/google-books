@@ -1,32 +1,42 @@
-
 <!DOCTYPE html>
 <html ng-app="MyApp">
-
 <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
-    
+
     <script>
         angular.module("MyApp", [])
             .controller("myCtrl2", function ($scope, $http) {
-                $scope.wait =  true;
+                $scope.wait = true;
+                $http.get('/get_user').success(function (data) {
+                    if (data.result == 'Success') {
+                        console.log('result')
+                        $scope.user = data.user;
+                        $scope.username = data.user.name.displayName
+                        console.log(data)
+                    } else {
+                        console.log('user not found!')
+                    }
+                }).error(function (data, status) {
+                    console.log('Error')
+                });
                 $scope.get_favorites = function () {
                     $http.get('/books/get_favorites').success(function (data) {
                         if (data.result == 'Success') {
                             $scope.favorites = data.data;
-                            $scope.wait =  false;
+                            $scope.wait = false;
                         } else {
                             $scope.favorites = null;
-                            $scope.wait =  false;
+                            $scope.wait = false;
                         }
                     }).error(function (data, status) {
-                        $scope.wait =  false;
+                        $scope.wait = false;
                         console.log('Error')
                     });
                 };
 
 
-                 $scope.remove_from_favorite = function (id) {
+                $scope.remove_from_favorite = function (id) {
                     var params = {
                         'bookId': id,
                     }
@@ -50,11 +60,20 @@
 <div ng-controller="myCtrl2" ng-init="get_favorites()">
     <form class="col-lg-6 col-lg-6 col-lg-offset-3 col-lg-offset-3" ng-submit="sendMail();">
         <br>
-        <a type="submit" class="btn btn-primary btn-sm" href="/auth/google-books">Back</a>
         <br>
-        <div class="text-center text-uppercase">
-            <h3>Your favorite books</h3>
+        <div class="text-center text-capitalize">
+            <h5 style="color: green;">Welcome {{ username | lowercase }}</h5>
+            <a class="pull-left" href="/auth/google-books">Back</a>
+            <a class="pull-right" href="/logout">Logout</a>
         </div>
+        <div class="form-group">
+            <div class="text-center">
+                <h3>Your favorite Books</h3>
+            </div>
+        </div>
+
+
+
         <h4 ng-show="wait">Please wait.....</h4>
         <br>
         <div ng-show="favorites.length == 0" class="text-center">
@@ -70,23 +89,25 @@
                     <th scope="col">Publisher</th>
                     <th scope="col">Image</th>
                     <th scope="col">Action</th>
-                 </tr>
+                </tr>
             </thead>
-            <tbody >
-                  <tr  scope="row" ng-repeat = "data in favorites">
+            <tbody>
+                <tr scope="row" ng-repeat="data in favorites">
                     <td ng-bind="$index+1+indexIncrement"></td>
                     <td ng-bind="data.title"></td>
                     <td ng-bind="data.author"></td>
                     <td ng-bind="data.published_date"></td>
                     <td ng-bind="data.publisher"></td>
-                    <td><img ng-src="{{data.image_url}}"></td>
                     <td>
-                            <button type="button" class="btn btn-warning btn" ng-click="remove_from_favorite(data.bookId)" title="Remove from favorite">
-                                    <i class="glyphicon glyphicon-trash"></i> Remove</button>
+                        <img ng-src="{{data.image_url}}">
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-warning btn" ng-click="remove_from_favorite(data.bookId)" title="Remove from favorite">
+                            <i class="glyphicon glyphicon-trash"></i> Remove</button>
                     </td>
                 </tr>
             </tbody>
-       </table>
+        </table>
     </form>
 </div>
 </body>

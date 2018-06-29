@@ -11,16 +11,16 @@ var configAuth = require('./auth');// load the auth variables from auth.js
 module.exports = function (passport) {
 
     // used to serialize the user for the session
-    // passport.serializeUser(function (user, done) {
-    //     done(null, user._id);
-    // });
+    passport.serializeUser(function (user, done) {
+        done(null, user);
+    });
 
-    // // used to deserialize the user
-    // passport.deserializeUser(function (id, done) {
-    //     User.findById(id, function (err, user) {
-    //         done(err, user);
-    //     });
-    // });
+    // used to deserialize the user
+    passport.deserializeUser(function (id, done) {
+        User.findById(id, function (err, user) {
+            done(err, user);
+        });
+    });
 
 
 
@@ -41,7 +41,7 @@ module.exports = function (passport) {
             console.log('profile')
             // asynchronous
             process.nextTick(function () {
-                console.log(profile)
+               // console.log(profile)
                 // if successful, return the new user
                 return done(null, profile);
             });

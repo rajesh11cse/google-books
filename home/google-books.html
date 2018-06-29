@@ -8,6 +8,22 @@
     <script>
         angular.module("MyApp", [])
             .controller("myCtrl", function ($scope, $http) {
+
+
+                $http.get('/get_user').success(function (data) {
+                    if (data.result == 'Success') {
+                        console.log('result')
+                        $scope.user = data.user;
+                        $scope.username = data.user.name.displayName
+                        console.log(data)
+                    } else {
+                        console.log('user not found!')
+                    }
+                }).error(function (data, status) {
+                    console.log('Error')
+                });
+
+                console.log(window.Headers)
                 $scope.name = 'rajesh'
                 $scope.getBooks = function () {
                     $scope.wait = true;
@@ -52,7 +68,7 @@
                     });
                 };
 
-                   $scope.remove_from_favorite = function (id) {
+                $scope.remove_from_favorite = function (id) {
                     var params = {
                         'bookId': id,
                     }
@@ -82,7 +98,7 @@
                     });
                 };
 
-                $scope.ifExists = function(id){
+                $scope.ifExists = function (id) {
                     return $scope.favorites.some(item => item.bookId == id);
                 }
 
@@ -90,11 +106,13 @@
     </script>
 </head>
 <div ng-controller="myCtrl" ng-init="getBooks(); get_favorites()">
-
     <form class="col-lg-6 col-lg-6 col-lg-offset-3 col-lg-offset-3" ng-submit="getBooks();">
-    <a class="pull-right" href="/logout">Logout</a>
         <br>
         <br>
+        <div class="text-center text-capitalize">
+            <h5 style="color: green;">Welcome {{ username | lowercase }}</h5>
+            <a class="pull-right" href="/logout">Logout</a>
+        </div>
         <div class="form-group">
             <h3>Book Name</h3>
             <input type="text" class="form-control" ng-model="name" ng-change="mailSent = false;" placeholder="Book name" required>
@@ -136,8 +154,8 @@
                     <td>
                         <button ng-if="!ifExists(data.id)" type="button" class="btn btn-success btn" ng-click="add_to_favorite(data)" title="Add to favorite">
                             <i class="glyphicon glyphicon-star"></i> Add</button>
-                            <button ng-if="ifExists(data.id)" type="button" class="btn btn-warning btn" ng-click="remove_from_favorite(data.id)" title="Remove from favorite">
-                                    <i class="glyphicon glyphicon-trash"></i> Remove</button>
+                        <button ng-if="ifExists(data.id)" type="button" class="btn btn-warning btn" ng-click="remove_from_favorite(data.id)" title="Remove from favorite">
+                            <i class="glyphicon glyphicon-trash"></i> Remove</button>
                     </td>
                 </tr>
             </tbody>

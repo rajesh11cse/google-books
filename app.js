@@ -13,7 +13,13 @@ var express = require("express"),
 
 // Initial the the passport 
 app.use(bodyParser.json());
-app.use(session({ secret: 'anything' }));// session for deserialize the user and get user by req.user
+app.use(session({ 
+    secret: 'anything', 
+    saveUninitialized: true,
+    resave: true, 
+    rolling :true,// <== Important to re-initilize session
+    cookie: { maxAge: 120000 } }));// session for deserialize the user and get user by req.user
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(logger('dev'));

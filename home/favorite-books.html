@@ -31,6 +31,8 @@
                         }
                     }).error(function (data, status) {
                         $scope.wait = false;
+                        if(window.confirm('Your current session has expired!'))
+                        $http.get('/logout');
                         console.log('Error')
                     });
                 };
